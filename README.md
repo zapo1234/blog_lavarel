@@ -1,2 +1,2 @@
-# blog_lavarel
+# Kticls
 script lavarel
