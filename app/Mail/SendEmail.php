@@ -32,6 +32,6 @@ class SendEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Activer votre compte sur Hubeecargf')->view('message_send');
+        return $this->subject('Activer votre compte sur hubeecar')->view('message_send');
     }
 }

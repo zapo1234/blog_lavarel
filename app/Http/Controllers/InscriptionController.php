@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 class InscriptionController extends Controller
 {
-    // inscription user 
+    // inscription user
 
     public function insert(){
 
@@ -23,7 +23,7 @@ class InscriptionController extends Controller
     }
 
     public function create(Request $request){
-		
+
 		$messages = [
 			'nom.max' => 'Votre prénom ne peut avoir plus de :max caractères.',
 			'nom.min' => 'Votre nom ne peut avoir moins de :min caractères.',
@@ -31,9 +31,9 @@ class InscriptionController extends Controller
 			'age.required' => 'vous devez saisir votre age',
 			'age.regex' => 'votre  doit etre age est un nombre entier',
 
-			
+
 		];
-		
+
 		$rules = [
 			'nom' => 'required|string|min:5|max:55',
 			'adresse' => 'required|string|min:3|max:255',
@@ -51,11 +51,12 @@ class InscriptionController extends Controller
 		}
 		else{
 			$data = $request->input();
-			
+
 			$nom = trim($data['nom']);
 			$nom = strip_tags($nom);
 			$adresse = trim($data['adresse']);
 			$adresse = stripslashes(strip_tags($adresse));
+			$token = md5(uniqid());
 			try{
 				$inscription = new Inscription;
                 $inscription->nom = $nom;
@@ -70,12 +71,12 @@ class InscriptionController extends Controller
 			}
 		}
     }
-	
-	
-	
-	
+
+
+
+
 	// système de cache Lavarel
-	
+
 	public function index() {
 
 		$seconde =3;
@@ -83,7 +84,7 @@ class InscriptionController extends Controller
 
 			return DB::table('inscription')->orderBy('nom','ASC')->paginate(5);
 		});
-		
+
 		return view('listepdf', compact('result'));
 	}
 
@@ -92,17 +93,17 @@ class InscriptionController extends Controller
 	function pdf() {
 
 		$pdf = \App::make('dompdf.wrapper');
-		
+
 		$pdf->loadHTML($this->convert_donnees());
-	
+
        return $pdf->stream();
-	   
-	} 
+
+	}
 
 	  function convert_donnees() {
-	 
+
 	   $result = Inscription::all()->sortBy('nom');
-     
+
 	   $outpout ='<table class="table">
 	   <thead>
 		 <tr>
@@ -113,9 +114,9 @@ class InscriptionController extends Controller
 		 </tr>
 	   </thead>
 	   <tbody>
-	   
+
 		';
-		
+
 		foreach($result as $resultats) {
 
 	   $outpout .='
@@ -126,18 +127,18 @@ class InscriptionController extends Controller
 	   <td>'. $resultats->pays.'</td>
 	 </tr>';
 	}
-	
+
 
 	$outpout .='</tbody></table>';
 
 	return $outpout;
-     
+
 	}
 
 	// liste par odre alphabétique croissant
 
     public function list(){
-		 
+
 		$students = Inscription::all()->sortBy('nom');
 		return view('student/list', compact('students'));
 	}
@@ -148,7 +149,7 @@ class InscriptionController extends Controller
         $pdf = PDF::loadView('student.list', compact('students'));
         return $pdf->download('student.pdf');
 	}
-	
+
 
 	public function search(Request $request) {
 
@@ -157,48 +158,48 @@ class InscriptionController extends Controller
 	  $serach = trim($search);
 
 	  if(strlen($search) > 2 ) {
-	 
+
 		$result = DB::table('inscription')->where('nom', 'like','%'.$search.'%')->paginate(5);
 	  }
 
 	  return view('listepdf', ['result'=>$result]);
 
 	}
-	
-	/** 
+
+	/**
 	 * @param \App\Tag  $tag
 	 * @return \Illuminate\Http\Response;
 	 */
 
 	public function edit($tag) {
-	  
+
 	   $data = Inscription::find($tag);
        return view('edit', compact('data'));
 
 	}
-	
+
 	// modifier des entrées d'id dans la base de données
 	public function creates(Request $request,$tag) {
-		
+
 		$const = 2;
-		
+
 		$age = $request->input('age');
-		 
+
 		$count = (int)$age*2;
-		
+
 		$accounts = Inscription::findOrFail($tag);
 		$accounts->nom = $request->input('nom');
 		$accounts->adresse = $request->input('adresse');
 		$accounts->age = $count;
 		$accounts->pays = $request->input('pays');
-	 
+
 		$accounts->save($request->all());
 
 		return redirect()->route('listepdf');
 }
 
-	public function hide($tag){
 
+	public function hide($tag){
 	// delete l\'id user
 	$accounts = Inscription::findOrFail($tag);
 	$accounts ->delete();
@@ -214,26 +215,26 @@ class InscriptionController extends Controller
 
 	public function  store(Request $request) {
 
-	
-
-		
-	  //$upload = $request->file('file');
+	    //$upload = $request->file('file');
 	  //$path = $upload->store('public/storage');
 
 	  $image = new Upload();
-	  
+
 	  $title="saoume_img";
 
 	  $image->title = $title;
-	  
+
 	  if($request->hasfile('file')) {
-	   
+
 		$file =$request->file('file');
+
 		$extension = $file->getClientOriginalExtension();
+
 		$filename = time().'.'.$extension;
+
 		$file->move(public_path('upload'), $filename);
 		$image->name = $filename;
-	   
+
 	}
 
 	else{
@@ -245,13 +246,13 @@ class InscriptionController extends Controller
 	$image->save();
 
 	  return redirect()->route('upload')->with('succes',' votre fichier est bien enregsitré');
-		
+
 	}
-	
-	
-	// suprimer upload dans bdd et sur le serveur 
+
+
+	// suprimer upload dans bdd et sur le serveur
 	public function del($tag){
-	 
+
 		$image = Upload::find($tag);
 		unlink(public_path('upload').'/'.$image->name);
        // on suprime les données dans la base de données
@@ -263,5 +264,5 @@ class InscriptionController extends Controller
 	}
 }
 
-  
+
 

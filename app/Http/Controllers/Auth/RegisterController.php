@@ -50,20 +50,20 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    
+
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
 
-        //
+        //redirect
 
         return redirect('register');
     }
 
     protected function validator(array $data)
-    
+
     {
 
         $messages = [
@@ -83,6 +83,7 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:55', 'unique:users'],
             'password' => 'min:5|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'min:5',
+            'remember_token'=> 'max:255',
         ],$messages);
     }
 
@@ -94,10 +95,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
+        $data['remember_token'] = md5(uniqid());
+
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'remember_token' => $data['remember_token'],
         ]);
     }
 }

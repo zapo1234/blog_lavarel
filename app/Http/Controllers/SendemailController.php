@@ -24,16 +24,16 @@ class SendemailController extends Controller
 			'nom.min' => 'Votre nom ne peut avoir moins de :min caractères.',
 			'message.required' => 'Vous devez saisir votre prénom.',
 			'email.required' => 'vous devez saisir votre age',
-			
 
-			
+
+
 		];
-		
+
 		$rules = [
 			'nom' => 'required|string|min:5|max:55',
 			'email' => 'required|string|min:3|max:255',
             'message' => 'required|string|max:100|'
-            
+
 		];
 
 
@@ -44,31 +44,27 @@ class SendemailController extends Controller
 			->withInput()
 			->withErrors($validator);
         }
-        
+
 
         else{
-        
-
-        // on recupére le mail to from
+            // on recupére le mail to from
         $email = $request->input('email');
-        
+
 
            $data = array(
-           
-            'nom' => $request->nom,
-            'email' =>$request->email,
-            'message' => $request->message
+               'nom' => $request->nom,
+               'email' =>$request->email,
+               'message' => $request->message
 
            );
-           
-           // envoi du mail
 
-           Mail::to($email)->send(new SendEmail($data));
-           // afficher 
+            // envoi du mail
+             Mail::to($email)->send(new SendEmail($data));
+            // afficher
            return 'succes email';
 
         }
-        
+
 
 
 
