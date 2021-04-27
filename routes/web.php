@@ -91,4 +91,9 @@ Route::post('basket/add/{product}', "BasketController@add")->name('basket.add');
 Route::get('basket/remove/{product}', "BasketController@remove")->name('basket.remove');
 Route::get('basket/empty', "BasketController@empty")->name('basket.empty');
 
+ // route role gestion des users pour les roles
+Route::get('/admin', 'AdminController@admin')->name('admin')->middleware('admin');
+//show un article
+Route::get('/users', 'GerantController@users')->name('users')->middleware('users');
+
 
