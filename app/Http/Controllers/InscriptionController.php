@@ -245,7 +245,7 @@ class InscriptionController extends Controller
 
 	$image->save();
 
-	  return redirect()->route('upload')->with('succes',' votre fichier est bien enregsitré');
+	  return redirect()->route('upload')->with('succes',' vous avez   bien enregsitré un profil');
 
 	}
 

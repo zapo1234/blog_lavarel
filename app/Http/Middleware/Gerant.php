@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class Gerant
 {
@@ -23,8 +24,7 @@ class Gerant
         // role equal à 1
 
         if(Auth::users()->role == 1){
-
-
+            return  redirect()->route('admin');
         }
 
         // gerant

@@ -59,7 +59,7 @@ class RegisterController extends Controller
 
         //redirect
 
-        return redirect('register');
+        return redirect('login');
     }
 
     protected function validator(array $data)
@@ -95,7 +95,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-
+        // create a token security
         $data['remember_token'] = md5(uniqid());
 
         return User::create([
